@@ -25,69 +25,37 @@ class GatewayConfiguration {
     @Bean
     fun customRouteLocator(builder: RouteLocatorBuilder): RouteLocator {
         return builder.routes()
-            .route(
-                "first-microservice"
-            ) { r: PredicateSpec ->
+            .route("first-microservice") { r: PredicateSpec ->
                 r.path("/first/**")
                     .and().method("POST")
-                    .and().readBody(
-                        Student::class.java
-                    ) { true }
-                    .filters { f: GatewayFilterSpec ->
-                        f.filters(
-                            requestFilter,
-                            authFilter
-                        )
-                    }
+                    .and().readBody(Student::class.java) { true }
+                    .filters { f: GatewayFilterSpec -> f.filters(requestFilter, authFilter) }
                     .uri("http://localhost:8081")
             }
-            .route(
-                "first-microservice"
-            ) { r: PredicateSpec ->
+            .route("first-microservice") { r: PredicateSpec ->
                 r.path("/first/**")
                     .and().method("GET")
-                    .filters { f: GatewayFilterSpec ->
-                        f.filters(
-                            authFilter
-                        )
-                    }
+                    .filters { f: GatewayFilterSpec -> f.filters(authFilter) }
                     .uri("http://localhost:8081")
             }
-            .route(
-                "second-microservice"
-            ) { r: PredicateSpec ->
+            .route("second-microservice") { r: PredicateSpec ->
                 r.path("/second")
                     .and().method("POST")
-                    .and().readBody(
-                        Company::class.java
-                    ) { true }
-                    .filters { f: GatewayFilterSpec ->
-                        f.filters(
-                            requestFilter,
-                            authFilter
-                        )
-                    }
+                    .and().readBody(Company::class.java) { true }
+                    .filters { f: GatewayFilterSpec -> f.filters(requestFilter, authFilter) }
                     .uri("http://localhost:8082")
             }
-            .route(
-                "second-microservice"
-            ) { r: PredicateSpec ->
+            .route("second-microservice") { r: PredicateSpec ->
                 r.path("/second")
                     .and().method("GET")
-                    .filters { f: GatewayFilterSpec ->
-                        f.filters(
-                            authFilter
-                        )
-                    }
+                    .filters { f: GatewayFilterSpec -> f.filters(authFilter) }
                     .uri("http://localhost:8082")
             }
-            .route(
-                "auth-server"
-            ) { r: PredicateSpec ->
+            .route("auth-server") { r: PredicateSpec ->
                 r.path("/login")
                     .uri("http://localhost:8088")
             }
-            .build()
+        .build()
     }
 
 

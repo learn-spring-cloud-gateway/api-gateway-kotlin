@@ -40,9 +40,9 @@ class AuthFilter(
                 println("in error")
                 return this.onError(exchange, "Credentials missing", HttpStatus.UNAUTHORIZED)
             }
-            token = if (request.headers.containsKey("userName") && request.headers.containsKey("role")) ({
+            token = if (request.headers.containsKey("username") && request.headers.containsKey("role")) ({
                 authUtil.getToken(
-                    Objects.requireNonNull(request.headers["userName"]).toString(),
+                    Objects.requireNonNull(request.headers["username"]).toString(),
                     Objects.requireNonNull(request.headers["role"]).toString()
                 )
             }).toString() else {
@@ -53,8 +53,6 @@ class AuthFilter(
 
             if (jwtUtil.isInvalid(token)) {
                 return this.onError(exchange, "Auth header invalid", HttpStatus.UNAUTHORIZED)
-            } else {
-                println("Authentication is successful")
             }
 
             this.populateRequestWithHeaders(exchange, token)

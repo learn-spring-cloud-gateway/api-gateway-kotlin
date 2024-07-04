@@ -30,7 +30,7 @@ class TypeController(
                 val request: HttpEntity<Student> = HttpEntity<Student>(
                     Student(1, "Test", "Student"),
                     setAuthHeader(
-                        inRequest.headers["userName"].toString(),
+                        inRequest.headers["username"].toString(),
                         inRequest.headers["role"].toString()
                     )
                 )
@@ -57,9 +57,9 @@ class TypeController(
         return "done"
     }
 
-    private fun setAuthHeader(userName: String, role: String): HttpHeaders {
+    private fun setAuthHeader(username: String, role: String): HttpHeaders {
         val headers = HttpHeaders()
-        headers["Authorization"] = "Bearer " + authUtil.getToken(userName, role)
+        headers["Authorization"] = "Bearer " + authUtil.getToken(username, role)
         return headers
     }
 }
