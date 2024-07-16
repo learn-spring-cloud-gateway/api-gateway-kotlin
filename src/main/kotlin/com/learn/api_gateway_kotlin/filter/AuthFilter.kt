@@ -4,6 +4,7 @@ import com.learn.api_gateway_kotlin.util.AuthUtil
 import com.learn.api_gateway_kotlin.util.JWTUtil
 import com.learn.api_gateway_kotlin.validator.RouteValidator
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.cloud.gateway.filter.GatewayFilter
@@ -50,9 +51,14 @@ class AuthFilter(
                     .dropLastWhile { it.isEmpty() }
                     .toTypedArray()[1]
             }
-
-            if (jwtUtil.isInvalid(token)) {
-                return this.onError(exchange, "Auth header invalid", HttpStatus.UNAUTHORIZED)
+            try {
+                if (jwtUtil.isInvalid(token)) {
+                    return this.onError(exchange, "Auth header invalid", HttpStatus.UNAUTHORIZED)
+                }
+            }
+            catch (e: ExpiredJwtException){
+                println(e)
+                return this.onError(exchange, e.message ?: "Expiration of given JWT token", HttpStatus.UNAUTHORIZED)
             }
 
             this.populateRequestWithHeaders(exchange, token)
@@ -65,11 +71,6 @@ class AuthFilter(
         response.setStatusCode(httpStatus)
         return response.setComplete()
     }
-
-    private fun getAuthHeader(request: ServerHttpRequest): String {
-        return request.headers.getOrEmpty("Authorization")[0]
-    }
-
 
     private fun isCredsMissing(request: ServerHttpRequest): Boolean {
         return !(request.headers.containsKey("username") && request.headers.containsKey("role")) && !request.headers.containsKey(
